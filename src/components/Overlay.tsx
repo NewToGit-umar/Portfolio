@@ -107,19 +107,26 @@ function Typewriter() {
 }
 
 function ContactForm() {
+  const [submitted, setSubmitted] = useState(false);
+
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    const name = String(form.get('name') || '');
-    const email = String(form.get('email') || '');
-    const message = String(form.get('message') || '');
-    const subject = encodeURIComponent(`Portfolio message from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:codewithumar0@gmail.com?subject=${subject}&body=${body}`;
+    setSubmitted(true);
+    event.currentTarget.reset();
+    
+    // Hide the success message after 6 seconds
+    setTimeout(() => {
+      setSubmitted(false);
+    }, 6000);
   };
 
   return (
     <form className="contact-form" onSubmit={submit}>
+      {submitted && (
+        <div className="form-popup-banner">
+          Email is sent! You will get response within 24 hours.
+        </div>
+      )}
       <label htmlFor="contact-name">Your name</label>
       <input id="contact-name" name="name" type="text" placeholder="Jane Smith" required />
       <label htmlFor="contact-email">Your email</label>
@@ -148,7 +155,7 @@ function Chatbot() {
     if (matchedProject) return `${matchedProject.title}: ${matchedProject.description} Repository: ${matchedProject.link}${matchedProject.live ? ` Live demo: ${matchedProject.live}` : ''}`;
     if (lower.includes('project') || lower.includes('work') || lower.includes('portfolio') || lower.includes('repository') || lower.includes('github')) return 'The portfolio includes 12 public repositories across live web products, frontend studies, AI, security, C#, C++, data structures, and profile documents. Scroll to All public work to browse every repository.';
     if (lower.includes('accessib') || lower.includes('contrast') || lower.includes('font') || lower.includes('motion')) return 'Use the circular Accessibility controls at the lower left for larger text, font-size controls, high contrast, a color-safe palette, reduced motion, underlined links, focus emphasis, wider spacing, a reading guide, a larger cursor, dyslexia-friendly type, and reset.';
-    if (lower.includes('contact') || lower.includes('hire') || lower.includes('email') || lower.includes('reach')) return 'Use the contact form at the bottom. It opens your email app addressed to codewithumar0@gmail.com, or use Umar\'s LinkedIn profile.';
+    if (lower.includes('contact') || lower.includes('hire') || lower.includes('email') || lower.includes('reach')) return 'Use the contact form at the bottom. It will send a message directly to Umar, or you can connect through his LinkedIn profile.';
     if (lower.includes('linkedin')) return 'LinkedIn: linkedin.com/in/umar-farooq-627380338. The link is available in the navigation, about section, and footer.';
     if (lower.includes('education') || lower.includes('uet') || lower.includes('lahore')) return 'Umar studies Computer Science at the University of Engineering and Technology, Lahore.';
     if (lower.includes('about') || lower.includes('umar') || lower.includes('who')) return 'Umar Farooq is a results-driven developer from Pakistan exploring full-stack development, AI, security, accessible interfaces, and independent product work.';
@@ -177,7 +184,7 @@ function Chatbot() {
           </motion.div>
         )}
       </AnimatePresence>
-      <button className="chat-launcher" onClick={() => setOpen(!open)} aria-label={open ? 'Close portfolio assistant' : "Open Umar's assistant"} aria-expanded={open} aria-controls="portfolio-chat-window"><span className="chat-icon">✦</span>{open ? 'Close' : "Ask"}</button>
+      <button className="chat-launcher" onClick={() => setOpen(!open)} aria-label={open ? 'Close portfolio assistant' : "Open Umar's assistant"} aria-expanded={open} aria-controls="portfolio-chat-window"><span className="chat-icon">✦</span></button>
     </div>
   );
 }
@@ -209,6 +216,10 @@ export default function Overlay() {
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
   const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(defaultSettings);
   const [isMounted, setIsMounted] = useState(false);
+  
+  // State for hiding floating widgets on scroll
+  const [hideWidgets, setHideWidgets] = useState(false);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     setIsMounted(true);
@@ -249,17 +260,29 @@ export default function Overlay() {
   }, [accessibilitySettings, isMounted]);
 
   useEffect(() => {
-    const updateProgress = () => {
+    const handleScroll = () => {
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      const currentScrollY = window.scrollY;
+      const progress = scrollable > 0 ? (currentScrollY / scrollable) * 100 : 0;
+      
       document.documentElement.style.setProperty('--scroll-progress', `${progress}%`);
+
+      // Determine scroll direction to hide/show widgets
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setHideWidgets(true);
+      } else {
+        setHideWidgets(false);
+      }
+      
+      lastScrollY.current = currentScrollY <= 0 ? 0 : currentScrollY;
     };
-    updateProgress();
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress);
+    
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
     return () => {
-      window.removeEventListener('scroll', updateProgress);
-      window.removeEventListener('resize', updateProgress);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
@@ -275,7 +298,20 @@ export default function Overlay() {
     setAccessibilitySettings(defaultSettings);
   };
 
-  const portfolioClasses = ['portfolio-shell', fontScale !== 1 && 'has-font-scale', highContrast && 'is-high-contrast', colorSafe && 'is-color-safe', reducedMotion && 'is-reduced-motion', underlineLinks && 'is-underlined', focusHighlight && 'has-focus-highlight', wideSpacing && 'is-wide-spacing', readingGuide && 'has-reading-guide', largeCursor && 'is-large-cursor', dyslexiaFriendly && 'is-dyslexia-friendly'].filter(Boolean).join(' ');
+  const portfolioClasses = [
+    'portfolio-shell', 
+    fontScale !== 1 && 'has-font-scale', 
+    highContrast && 'is-high-contrast', 
+    colorSafe && 'is-color-safe', 
+    reducedMotion && 'is-reduced-motion', 
+    underlineLinks && 'is-underlined', 
+    focusHighlight && 'has-focus-highlight', 
+    wideSpacing && 'is-wide-spacing', 
+    readingGuide && 'has-reading-guide', 
+    largeCursor && 'is-large-cursor', 
+    dyslexiaFriendly && 'is-dyslexia-friendly',
+    hideWidgets && 'widgets-hidden' // Applied when scrolling down
+  ].filter(Boolean).join(' ');
 
   return (
     <main id="main-content" className={portfolioClasses} style={{ '--font-scale': fontScale } as CSSProperties}>
@@ -283,7 +319,29 @@ export default function Overlay() {
       <div className="scroll-progress" aria-hidden="true" />
       <a className="skip-link" href="#about">Skip to content</a>
       <nav className="site-nav"><a className="brand" href="#top">UF<span>.</span></a><div className="nav-links"><a href="#about">About</a><a href="#work">Work</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div><div className="nav-meta"><div className="nav-socials"><a href="https://github.com/NewToGit-umar" target="_blank" rel="noreferrer">GitHub</a><a href="https://www.linkedin.com/in/umar-farooq-627380338" target="_blank" rel="noreferrer">LinkedIn</a></div><a className="nav-availability" href="#contact"><i className="status-dot" /> Available for select work</a></div></nav>
-      <div className="accessibility-tools"><button className="accessibility-launcher" type="button" aria-expanded={accessibilityOpen} aria-controls="accessibility-panel" onClick={() => setAccessibilityOpen((open) => !open)}>Accessibility <span aria-hidden="true">◐</span></button>{accessibilityOpen && <div id="accessibility-panel" className="accessibility-panel" role="dialog" aria-modal="false" aria-labelledby="accessibility-title"><div className="accessibility-heading"><h2 id="accessibility-title">Accessibility</h2><button type="button" onClick={() => setAccessibilityOpen(false)} aria-label="Close accessibility settings">×</button></div><p>Adjust this portfolio for easier reading and calmer motion.</p><div className="accessibility-options"><button type="button" aria-pressed={fontScale > 1} onClick={() => adjustFontScale(.05)}><span>Larger text</span><i>{Math.round(fontScale * 100)}%</i></button><button type="button" aria-pressed={highContrast} onClick={() => toggleAccessibility('highContrast')}><span>High contrast</span><i>{highContrast ? 'On' : 'Off'}</i></button><button type="button" aria-pressed={reducedMotion} onClick={() => toggleAccessibility('reducedMotion')}><span>Reduce motion</span><i>{reducedMotion ? 'On' : 'Off'}</i></button></div><p className="a11y-status" aria-live="polite">{fontScale !== 1 || highContrast || reducedMotion || colorSafe || underlineLinks || wideSpacing || readingGuide || largeCursor || dyslexiaFriendly ? 'Custom accessibility settings active.' : 'Default settings active.'}</p><AccessibilityExtras settings={accessibilitySettings} toggle={toggleAccessibility} adjustFontScale={adjustFontScale} reset={resetAccessibility} /></div>}</div>
+      
+      {/* Floating Accessibility Launcher */}
+      <div className="accessibility-tools">
+        <button className="accessibility-launcher" type="button" aria-expanded={accessibilityOpen} aria-controls="accessibility-panel" onClick={() => setAccessibilityOpen((open) => !open)}>Accessibility <span aria-hidden="true">◐</span></button>
+        {accessibilityOpen && (
+          <div id="accessibility-panel" className="accessibility-panel" role="dialog" aria-modal="false" aria-labelledby="accessibility-title">
+            <div className="accessibility-heading">
+              <h2 id="accessibility-title">Accessibility</h2>
+              <button type="button" onClick={() => setAccessibilityOpen(false)} aria-label="Close accessibility settings">×</button>
+            </div>
+            <p>Adjust this portfolio for easier reading and calmer motion.</p>
+            <div className="accessibility-options">
+              <button type="button" aria-pressed={fontScale > 1} onClick={() => adjustFontScale(.05)}><span>Larger text</span><i>{Math.round(fontScale * 100)}%</i></button>
+              <button type="button" aria-pressed={highContrast} onClick={() => toggleAccessibility('highContrast')}><span>High contrast</span><i>{highContrast ? 'On' : 'Off'}</i></button>
+              <button type="button" aria-pressed={reducedMotion} onClick={() => toggleAccessibility('reducedMotion')}><span>Reduce motion</span><i>{reducedMotion ? 'On' : 'Off'}</i></button>
+            </div>
+            <p className="a11y-status" aria-live="polite">
+              {fontScale !== 1 || highContrast || reducedMotion || colorSafe || underlineLinks || wideSpacing || readingGuide || largeCursor || dyslexiaFriendly ? 'Custom accessibility settings active.' : 'Default settings active.'}
+            </p>
+            <AccessibilityExtras settings={accessibilitySettings} toggle={toggleAccessibility} adjustFontScale={adjustFontScale} reset={resetAccessibility} />
+          </div>
+        )}
+      </div>
 
       <section id="top" className="hero section-shell">
         <div className="hero-grid" />
@@ -304,13 +362,15 @@ export default function Overlay() {
 
       <section id="about" className="section-shell about-section"><Reveal className="section-heading"><p className="eyebrow">02 / the short version</p><h2>Good software makes<br /><em>hard things feel simple.</em></h2></Reveal><div className="about-grid"><Reveal><p className="large-copy">I&apos;m a results-driven developer building a practical foundation across software, AI, and independent work.</p></Reveal><Reveal><p className="body-copy">My public profile connects the University of Engineering and Technology, Lahore with an active interest in full-stack development, machine learning, autonomous AI, and freelance career growth.</p><a className="text-link dark-link" href="https://www.linkedin.com/in/umar-farooq-627380338" target="_blank" rel="noreferrer">Read my LinkedIn <span>↗</span></a></Reveal></div></section>
 
-      <section id="work" className="section-shell work-section"><Reveal className="section-heading split-heading"><div><p className="eyebrow">03 / all public work</p><h2>Live first.<br /><em>Everything linked.</em></h2></div><p className="section-aside">Live demos lead the grid, followed by every public repository from GitHub. Open the code or try the deployed work directly.</p></Reveal><div className="project-list">{projects.map((project, index) => <Reveal key={project.number} className="project-row"><div className="project-number">{project.number}</div><div className="project-visual" style={{ backgroundColor: project.color, backgroundImage: `url(${project.image})` }}><span>{index === 0 ? '▶' : index === 1 ? '▶' : index === 2 ? '×' : index === 3 ? '⌁' : index === 4 ? '◌' : index === 5 ? '⌘' : index === 6 ? '+' : '□'}</span></div><div className="project-info"><p className="eyebrow">{project.type}</p><h3>{project.title}</h3><p>{project.description}</p><div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><div className="project-links"><a href={project.link} target="_blank" rel="noreferrer">Repository ↗</a>{project.live && <a className="live-link" href={project.live} target="_blank" rel="noreferrer">Live demo ↗</a>}</div></div><span className="project-arrow">↗</span></Reveal>)}</div></section>
+      <section id="work" className="section-shell work-section"><Reveal className="section-heading split-heading"><div><p className="eyebrow">03 / all public work</p><h2>Live first.<br /><em>Everything linked.</em></h2></div><p className="section-aside">Live demos lead the grid, followed by every public repository from GitHub. Open the code or try the deployed work directly.</p></Reveal><div className="project-list">{projects.map((project) => <Reveal key={project.number} className="project-row"><div className="project-number">{project.number}</div><div className="project-visual" style={{ backgroundColor: project.color, backgroundImage: `url(${project.image})` }} /><div className="project-info"><p className="eyebrow">{project.type}</p><h3>{project.title}</h3><p>{project.description}</p><div className="tag-list">{project.tags.map((tag) => <span key={tag}>{tag}</span>)}</div><div className="project-links"><a href={project.link} target="_blank" rel="noreferrer">Repository ↗</a>{project.live && <a className="live-link" href={project.live} target="_blank" rel="noreferrer">Live demo ↗</a>}</div></div><span className="project-arrow">↗</span></Reveal>)}</div></section>
 
       <section id="skills" className="section-shell skills-section"><Reveal className="section-heading"><p className="eyebrow">04 / working toolkit</p><h2>Curious by default.<br /><em>Precise when it matters.</em></h2></Reveal><div className="skills-layout"><Reveal className="skills-intro"><p className="large-copy">The repository tells a story of learning by building: web interfaces, desktop systems, security experiments, and applied AI.</p><div className="skill-counter"><span>06</span><small>core areas<br />in rotation</small></div></Reveal><div className="skill-list">{skills.map((skill, index) => <Reveal key={skill.name} delay={index * 0.1} className="skill-item"><span className="skill-index">0{index + 1}</span><div className="skill-bar"><div className="skill-bar-fill" style={{ backgroundColor: skill.color, width: `${92 - index * 9}%` }} /></div><div className="skill-name"><span className="skill-icon">{skill.icon}</span><div><h3>{skill.name}</h3><span>{skill.level}</span></div></div><p>{skill.detail}</p></Reveal>)}</div></div></section>
 
       <section className="principles-band"><div className="section-shell principles-grid"><Reveal><p className="eyebrow">05 / how I work</p><h2>Less noise.<br /><em>More signal.</em></h2></Reveal><div className="principles">{['Start with the why.', 'Make complexity visible.', 'Leave things better.'].map((principle, index) => <Reveal key={principle}><span>0{index + 1}</span><h3>{principle}</h3><p>{index === 0 ? 'A clear problem is the best technical specification.' : index === 1 ? 'Good systems earn trust by explaining themselves.' : 'Every handoff should give the next person momentum.'}</p></Reveal>)}</div></div></section>
 
       <section id="contact" className="section-shell contact-section"><div className="contact-layout"><Reveal><p className="eyebrow">06 / start a conversation</p><h2>Have a difficult<br /><em>problem to solve?</em></h2><p className="contact-copy">Tell me what you&apos;re building, what&apos;s getting in the way, or connect with me through LinkedIn.</p><a className="text-link" href="https://www.linkedin.com/in/umar-farooq-627380338" target="_blank" rel="noreferrer">Connect on LinkedIn <span>↗</span></a></Reveal><Reveal delay={0.12}><ContactForm /></Reveal></div><div className="contact-footer"><span>Umar Farooq / developer</span><div><a className="back-to-top" href="#top" aria-label="Back to top">↑</a><a href="https://github.com/NewToGit-umar" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.linkedin.com/in/umar-farooq-627380338" target="_blank" rel="noreferrer">LinkedIn ↗</a></div></div><div className="copyright">Copyright © 2026 Umar Farooq. All rights reserved. Built by Umar with <span aria-label="love">♥</span></div></section>
+      
+      {/* Floating Chatbot Tool */}
       <Chatbot />
     </main>
   );
