@@ -109,15 +109,32 @@ function Typewriter() {
 function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
-    event.currentTarget.reset();
     
-    // Hide the success message after 6 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 6000);
+    // Grab the form data
+    const formData = new FormData(event.currentTarget);
+    // Get your free key from https://web3forms.com/
+    formData.append("access_key", "d6887dd1-5aac-4b10-9d06-e681bb2a03e5"); 
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        event.currentTarget.reset();
+        
+        // Hide the success message after 6 seconds
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 6000);
+      }
+    } catch (error) {
+      console.error("Form submission error", error);
+    }
   };
 
   return (
@@ -129,10 +146,13 @@ function ContactForm() {
       )}
       <label htmlFor="contact-name">Your name</label>
       <input id="contact-name" name="name" type="text" placeholder="Jane Smith" required />
+      
       <label htmlFor="contact-email">Your email</label>
       <input id="contact-email" name="email" type="email" placeholder="jane@example.com" required />
+      
       <label htmlFor="contact-message">What are you building?</label>
       <textarea id="contact-message" name="message" placeholder="Tell me a little about the project..." rows={5} required />
+      
       <button className="button button-primary" type="submit">Send message <span>↗</span></button>
     </form>
   );
