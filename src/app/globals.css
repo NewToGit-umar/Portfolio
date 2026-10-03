@@ -25,6 +25,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -33,6 +35,7 @@ body {
   font-family: var(--font-geist-sans), sans-serif;
   margin: 0;
   overflow-x: hidden;
+  width: 100%;
 }
 
 a {
@@ -533,37 +536,12 @@ h2 em {
 }
 
 .project-visual {
-  align-items: center;
-  display: flex;
-  height: 175px;
-  justify-content: center;
+  background: var(--surface-light);
+  border: 1px solid var(--line);
+  height: 100px;
   margin: 22px 0 26px;
-  overflow: hidden;
   position: relative;
-}
-
-.project-visual:before {
-  border: 1px solid rgba(16, 20, 23, .25);
-  content: '';
-  height: 120px;
-  position: absolute;
-  transform: rotate(45deg);
-  width: 120px;
-}
-
-.project-visual:after {
-  border: 1px solid rgba(16, 20, 23, .25);
-  content: '';
-  height: 75px;
-  position: absolute;
-  transform: rotate(45deg);
-  width: 75px;
-}
-
-.project-visual span {
-  font-size: 46px;
-  position: relative;
-  z-index: 1;
+  display: none;
 }
 
 .project-info {
@@ -1056,40 +1034,6 @@ h2 em {
   border-color: var(--lime);
   color: var(--lime);
   transform: translateY(-2px);
-}
-
-.project-visual {
-  background-position: center;
-  background-size: cover;
-}
-
-.project-visual:before {
-  background: rgba(16, 20, 23, .32);
-  border: 0;
-  inset: 0;
-  height: auto;
-  transform: none;
-  width: auto;
-}
-
-.project-visual:after {
-  border-color: rgba(242, 240, 233, .45);
-  height: auto;
-  inset: 12px;
-  transform: none;
-  width: auto;
-}
-
-.project-visual span {
-  background: rgba(16, 20, 23, .72);
-  border: 1px solid rgba(242, 240, 233, .5);
-  border-radius: 50%;
-  color: var(--lime);
-  display: grid;
-  font-size: 22px;
-  height: 54px;
-  place-items: center;
-  width: 54px;
 }
 
 .skill-name {
@@ -1614,6 +1558,11 @@ h2 em {
 
   .site-nav {
     padding: 0 16px;
+    height: 64px;
+  }
+
+  .brand {
+    font-size: 20px;
   }
 
   .nav-links {
@@ -1630,27 +1579,36 @@ h2 em {
   }
 
   .hero {
-    display: block;
-    min-height: 850px;
-    padding-top: 150px;
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    gap: 40px;
   }
 
   .hero h1 {
-    font-size: 59px;
+    font-size: clamp(40px, 12vw, 56px);
+    letter-spacing: -.05em;
   }
 
   .hero-art {
-    margin: 70px 8px 30px;
-    min-height: 320px;
-    transform: rotate(1deg);
+    margin: 0;
+    width: 100%;
+    min-height: auto;
+    transform: none;
   }
 
   .art-body {
-    padding: 26px 20px;
+    font-size: 11px;
+    padding: 20px 16px;
+    overflow-x: auto;
   }
 
   .hero-intro {
-    font-size: 16px;
+    font-size: 15px;
+    max-width: 100%;
+    margin-top: 20px;
   }
 
   .hero-actions {
@@ -1660,37 +1618,44 @@ h2 em {
   }
 
   .hero-index {
-    display: none;
+    position: static;
+    transform: none;
+    margin-top: 20px;
   }
 
   .hero-note {
-    bottom: 25px;
+    position: static;
+    margin-top: 20px;
+    justify-content: space-between;
     font-size: 8px;
     gap: 15px;
-    left: 20px;
-    right: auto;
   }
 
   .about-section,
   .work-section,
   .skills-section {
-    padding-bottom: 110px;
-    padding-top: 90px;
+    padding-bottom: 70px;
+    padding-top: 70px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .section-heading {
-    margin-bottom: 54px;
+    margin-bottom: 40px;
   }
 
   .about-grid,
   .skills-layout,
-  .principles-grid {
-    display: block;
+  .principles-grid,
+  .contact-layout {
+    display: flex;
+    flex-direction: column;
     margin-left: 0;
+    gap: 30px;
   }
 
   .about-grid>div+div {
-    margin-top: 35px;
+    margin-top: 0;
   }
 
   .split-heading {
@@ -1698,7 +1663,8 @@ h2 em {
   }
 
   .section-aside {
-    margin-top: 25px;
+    margin-top: 15px;
+    max-width: 100%;
   }
 
   .project-list {
@@ -1710,11 +1676,11 @@ h2 em {
   }
 
   .skills-intro {
-    margin-bottom: 55px;
+    margin-bottom: 35px;
   }
 
   .skill-counter {
-    margin: 50px 0;
+    margin: 30px 0;
   }
 
   .skill-item {
@@ -1727,11 +1693,11 @@ h2 em {
   }
 
   .principles-band {
-    padding: 90px 0;
+    padding: 70px 0;
   }
 
   .principles {
-    margin-top: 60px;
+    margin-top: 40px;
   }
 
   .principles>div {
@@ -1743,15 +1709,15 @@ h2 em {
   }
 
   .contact-section {
-    min-height: 600px;
-    padding-top: 100px;
+    min-height: auto;
+    padding-top: 70px;
   }
 
   .contact-footer {
     align-items: flex-start;
     flex-direction: column;
     gap: 18px;
-    margin-top: 100px;
+    margin-top: 60px;
   }
 
   .chatbot {
@@ -1768,12 +1734,8 @@ h2 em {
     font-size: 9px;
   }
 
-  .contact-layout {
-    display: block;
-  }
-
   .contact-form {
-    margin-top: 58px;
+    margin-top: 30px;
     padding: 18px;
   }
 }
