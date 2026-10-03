@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
-const roles = ['full-stack developer', 'desktop app developer', '.NET engineer', 'UI/UX designer'];
+const roles = [' full-stack developer', ' desktop app developer', ' .NET engineer', ' UI/UX designer'];
 type AccessibilitySettings = {
   fontScale: number;
   highContrast: boolean;
@@ -349,7 +349,7 @@ export default function Overlay() {
           <div className="hero-identity"><div className="profile-frame" role="img" aria-label="Portrait of Umar Farooq" style={{ backgroundImage: "url('https://avatars.githubusercontent.com/u/204542200?v=4')" }} /><div><p className="hero-name">UMAR FAROOQ</p><p className="hero-role">developer / builder</p></div></div>
           <motion.p className="eyebrow" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>01 / independent developer</motion.p>
           <motion.h1 initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.8 }}>Building digital<br /><em>systems with intent.</em></motion.h1>
-          <motion.p className="hero-intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="intro-line">Hi, I&apos;m Umar Farooq.</span><span className="intro-line">I&apos;m a <strong><Typewriter /></strong></span></motion.p>
+          <motion.p className="hero-intro" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}><span className="intro-line">Hi, I&apos;m Umar Farooq. </span><span className="intro-line">  <strong><Typewriter /></strong></span></motion.p>
           <motion.div className="hero-actions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}><a className="button button-primary" href="#work">See selected work <span>↘</span></a><a className="text-link" href="#about">More about me <span>↗</span></a></motion.div>
         </div>
         <motion.div className="hero-art" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.55, duration: 0.8 }} aria-label="A preview of Umar&apos;s development workflow">
