@@ -3,7 +3,7 @@
 import { AnimatePresence, motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
-const roles = ['full-stack developer', 'AI explorer', '.NET engineer', 'UI/UX designer'];
+const roles = ['full-stack developer', 'desktop app developer', '.NET engineer', 'UI/UX designer'];
 type AccessibilitySettings = {
   fontScale: number;
   highContrast: boolean;
@@ -17,35 +17,18 @@ type AccessibilitySettings = {
   dyslexiaFriendly: boolean;
 };
 
-function getAccessibilitySettings(): AccessibilitySettings {
-  const defaults: AccessibilitySettings = { fontScale: 1, highContrast: false, colorSafe: false, reducedMotion: false, underlineLinks: false, focusHighlight: true, wideSpacing: false, readingGuide: false, largeCursor: false, dyslexiaFriendly: false };
-  if (typeof window === 'undefined') return defaults;
-
-  try {
-    const saved = window.localStorage.getItem('umar-portfolio-accessibility');
-    if (saved) {
-      const parsed = JSON.parse(saved) as Partial<AccessibilitySettings>;
-      return {
-        fontScale: typeof parsed.fontScale === 'number' ? Math.min(1.25, Math.max(.9, parsed.fontScale)) : defaults.fontScale,
-        highContrast: parsed.highContrast === true,
-        colorSafe: parsed.colorSafe === true,
-        reducedMotion: parsed.reducedMotion === undefined
-          ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-          : parsed.reducedMotion === true,
-        underlineLinks: parsed.underlineLinks === true,
-        focusHighlight: parsed.focusHighlight !== false,
-        wideSpacing: parsed.wideSpacing === true,
-        readingGuide: parsed.readingGuide === true,
-        largeCursor: parsed.largeCursor === true,
-        dyslexiaFriendly: parsed.dyslexiaFriendly === true,
-      };
-    }
-  } catch {
-    return defaults;
-  }
-
-  return { ...defaults, reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches };
-}
+const defaultSettings: AccessibilitySettings = {
+  fontScale: 1,
+  highContrast: false,
+  colorSafe: false,
+  reducedMotion: false,
+  underlineLinks: false,
+  focusHighlight: true,
+  wideSpacing: false,
+  readingGuide: false,
+  largeCursor: false,
+  dyslexiaFriendly: false,
+};
 
 const skills = [
   { name: 'Python', icon: 'Py', level: 'Core language', detail: 'Security tools and applied project experimentation.', color: '#2255d6' },
@@ -194,7 +177,7 @@ function Chatbot() {
           </motion.div>
         )}
       </AnimatePresence>
-      <button className="chat-launcher" onClick={() => setOpen(!open)} aria-label={open ? 'Close portfolio assistant' : "Open Umar's assistant"} aria-expanded={open} aria-controls="portfolio-chat-window"><span className="chat-icon">✦</span>{open ? 'Close' : "Ask Umar's assistant"}</button>
+      <button className="chat-launcher" onClick={() => setOpen(!open)} aria-label={open ? 'Close portfolio assistant' : "Open Umar's assistant"} aria-expanded={open} aria-controls="portfolio-chat-window"><span className="chat-icon">✦</span>{open ? 'Close' : "Ask"}</button>
     </div>
   );
 }
@@ -224,15 +207,46 @@ function AccessibilityExtras({ settings, toggle, adjustFontScale, reset }: Acces
 
 export default function Overlay() {
   const [accessibilityOpen, setAccessibilityOpen] = useState(false);
-  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(getAccessibilitySettings);
+  const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(defaultSettings);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    try {
+      const saved = window.localStorage.getItem('umar-portfolio-accessibility');
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<AccessibilitySettings>;
+        setAccessibilitySettings({
+          fontScale: typeof parsed.fontScale === 'number' ? Math.min(1.25, Math.max(.9, parsed.fontScale)) : defaultSettings.fontScale,
+          highContrast: parsed.highContrast === true,
+          colorSafe: parsed.colorSafe === true,
+          reducedMotion: parsed.reducedMotion === undefined
+            ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            : parsed.reducedMotion === true,
+          underlineLinks: parsed.underlineLinks === true,
+          focusHighlight: parsed.focusHighlight !== false,
+          wideSpacing: parsed.wideSpacing === true,
+          readingGuide: parsed.readingGuide === true,
+          largeCursor: parsed.largeCursor === true,
+          dyslexiaFriendly: parsed.dyslexiaFriendly === true,
+        });
+      } else {
+        setAccessibilitySettings((current) => ({
+          ...current,
+          reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        }));
+      }
+    } catch {}
+  }, []);
+
   const { fontScale, highContrast, colorSafe, reducedMotion, underlineLinks, focusHighlight, wideSpacing, readingGuide, largeCursor, dyslexiaFriendly } = accessibilitySettings;
 
   useEffect(() => {
+    if (!isMounted) return;
     try {
       window.localStorage.setItem('umar-portfolio-accessibility', JSON.stringify(accessibilitySettings));
-    } catch {
-    }
-  }, [accessibilitySettings]);
+    } catch {}
+  }, [accessibilitySettings, isMounted]);
 
   useEffect(() => {
     const updateProgress = () => {
@@ -258,7 +272,7 @@ export default function Overlay() {
   };
 
   const resetAccessibility = () => {
-    setAccessibilitySettings({ fontScale: 1, highContrast: false, colorSafe: false, reducedMotion: false, underlineLinks: false, focusHighlight: true, wideSpacing: false, readingGuide: false, largeCursor: false, dyslexiaFriendly: false });
+    setAccessibilitySettings(defaultSettings);
   };
 
   const portfolioClasses = ['portfolio-shell', fontScale !== 1 && 'has-font-scale', highContrast && 'is-high-contrast', colorSafe && 'is-color-safe', reducedMotion && 'is-reduced-motion', underlineLinks && 'is-underlined', focusHighlight && 'has-focus-highlight', wideSpacing && 'is-wide-spacing', readingGuide && 'has-reading-guide', largeCursor && 'is-large-cursor', dyslexiaFriendly && 'is-dyslexia-friendly'].filter(Boolean).join(' ');
