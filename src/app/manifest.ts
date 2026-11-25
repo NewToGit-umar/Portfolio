@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'Portfolio',
     description: 'Portfolio of Umar Farooq — developer & builder',
     start_url: '/',
-    display: 'standalone',      // browser bar ke baghair, app jaisa
+    display: 'standalone',      
     background_color: '#0a0a0a',
     theme_color: '#0a0a0a',
     icons: [
