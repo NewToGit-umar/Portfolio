@@ -125,7 +125,7 @@ function ContactForm() {
     
     // Grab the form data
     const formData = new FormData(event.currentTarget);
-    // Get your free key from https://web3forms.com/
+    
     formData.append("access_key", "d6887dd1-5aac-4b10-9d06-e681bb2a03e5"); 
 
     try {
@@ -387,7 +387,7 @@ export default function Overlay() {
           <div className="art-topbar"><span className="art-dots"><i /><i /><i /></span><span aria-hidden="true">⌘ K</span></div>
           <div className="art-body"><p className="art-comment">&#47;&#47; turn ambiguity into momentum</p><p><span className="art-keyword">const</span> approach = <span className="art-string">&apos;thoughtful&apos;</span>;</p><p><span className="art-keyword">const</span> output = <span className="art-function">build</span>({'{'}</p><p className="art-indent">clarity: <span className="art-boolean">true</span>,</p><p className="art-indent">security: <span className="art-boolean">true</span>,</p><p className="art-indent">velocity: <span className="art-boolean">true</span></p><p>{'}'});</p><div className="art-signal"><span /><span /><span /><small>shipping with intent</small></div></div>
         </motion.div>
-        <div className="hero-index"><span>Scroll to explore</span><span className="scroll-line" /></div>
+    
         <div className="hero-note"><span>Based in Pakistan</span><span>Working globally</span></div>
       </section>
 

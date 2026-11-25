@@ -279,21 +279,6 @@ h2 em {
   margin-left: 10px;
 }
 
-.hero-index {
-  align-items: center;
-  bottom: 38px;
-  color: var(--muted);
-  display: flex;
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 9px;
-  gap: 14px;
-  left: 32px;
-  letter-spacing: .1em;
-  position: absolute;
-  text-transform: uppercase;
-  transform: rotate(-90deg);
-  transform-origin: left;
-}
 
 .scroll-line {
   background: var(--coral);
