@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next'
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Umar Farooq | Developer',
-    short_name: 'Umar Farooq',
+    short_name: 'Portfolio',
     description: 'Portfolio of Umar Farooq — developer & builder',
     start_url: '/',
     display: 'standalone',      // browser bar ke baghair, app jaisa
