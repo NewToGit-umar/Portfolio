@@ -7,7 +7,6 @@ export const viewport: Viewport = {
   themeColor: '#0a0a0a',
 }
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
